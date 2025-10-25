@@ -30,10 +30,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
       body: Column(
         children: [
-          TextFormField(
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Digite uma Tarefa',
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextFormField(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Digite uma Tarefa',
+              ),
             ),
           ),
           Expanded(
@@ -49,6 +52,12 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
         ],
+      ),
+
+      floatingActionButton: FloatingActionButton(
+        onPressed: adicionarTarefa(),
+        tooltip: 'Adicionar Tarefa',
+        child: Icon(Icons.add),
       ),
     );
   }
