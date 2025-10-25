@@ -31,7 +31,10 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(
         children: [
           TextFormField(
-            decoration: InputDecoration(border: OutlineInputBorder()),
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Digite uma Tarefa',
+            ),
           ),
           Expanded(
             child: ListView.builder(
