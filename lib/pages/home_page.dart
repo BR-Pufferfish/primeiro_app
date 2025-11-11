@@ -1,4 +1,6 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:primeiro_app/models/tarefa_model.dart';
 import 'package:primeiro_app/widgets/subtitulo_widget.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -12,18 +14,50 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<String> tarefas = ["Tarefa 1", "Tarefa 2", "Tarefa 3", "Tarefa 4"];
-  late TextEditingController controller;
+  List<Tarefa> tarefas = [];
+
+  late TextEditingController controllerDescricao;
+  late TextEditingController controllerTitulo;
+
+  bool isLoading = true;
 
   @override
   void initState() {
-    controller = TextEditingController();
+    controllerDescricao = TextEditingController();
+    controllerTitulo = TextEditingController();
+
+    _getTarefas();
+
     super.initState();
+  }
+
+  Future<void> _getTarefas() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    var dio = Dio(
+      BaseOptions(
+        connectTimeout: const Duration(seconds: 30),
+        baseUrl: 'https://691266ae52a60f10c8218c11.mockapi.io/api/v1',
+      ),
+    );
+
+    var response = await dio.get('/tarefa');
+
+    var listaData = response.data as List;
+
+    for (var data in listaData) {
+      var tarefa = Tarefa(descricao: data['descricao'], titulo: data['titulo']);
+      tarefas.add(tarefa);
+    }
+    setState(() {});
   }
 
   @override
   void dispose() {
-    controller.dispose();
+    controllerDescricao.dispose();
+    controllerTitulo.dispose();
     super.dispose();
   }
 
@@ -46,10 +80,20 @@ class _MyHomePageState extends State<MyHomePage> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextFormField(
-              controller: controller,
+              controller: controllerTitulo,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Digite uma Tarefa',
+                labelText: 'Digite o Título',
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextFormField(
+              controller: controllerDescricao,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Digite a Descrição',
               ),
             ),
           ),
@@ -59,7 +103,8 @@ class _MyHomePageState extends State<MyHomePage> {
               itemBuilder: (context, index) {
                 return ListTile(
                   leading: Icon(Icons.task),
-                  title: Text(tarefas[index]),
+                  title: Text(tarefas[index].titulo),
+                  subtitle: Text(tarefas[index].descricao),
                   trailing: Icon(Icons.arrow_right_alt_outlined),
                 );
               },
@@ -77,15 +122,29 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _adicionarTarefa() {
-    var tarefaDigitada = controller.text;
-    if (tarefaDigitada.trim().isEmpty) {
+    var tituloTarefa = controllerTitulo.text;
+    var descricaoTarefa = controllerDescricao.text;
+    if (tituloTarefa.trim().isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Por favor, digite um titulo.')));
+      return;
+    }
+
+    if (descricaoTarefa.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Por favor, digite uma tarefa válida.')),
+        SnackBar(content: Text('Por favor, digite uma descrição.')),
       );
       return;
     }
+
+    var tarefa = Tarefa(descricao: descricaoTarefa, titulo: tituloTarefa);
+
     setState(() {
-      tarefas.add(tarefaDigitada);
+      tarefas.add(tarefa);
     });
+
+    controllerDescricao.clear();
+    controllerTitulo.clear();
   }
 }
