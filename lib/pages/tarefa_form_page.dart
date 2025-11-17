@@ -102,6 +102,9 @@ class _TarefaFormPageState extends State<TarefaFormPage> {
         '/tarefa',
         data: {'titulo': tituloTarefa, 'descricao': descricaoTarefa},
       );
+
+      if (!context.mounted) return;
+      Navigator.pop(context);
     }
   }
 }

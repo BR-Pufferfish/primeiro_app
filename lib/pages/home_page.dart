@@ -93,13 +93,18 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _adicionarTarefa() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) {
-          return TarefaFormPage();
-        },
-      ),
-    );
+    Navigator.of(context)
+        .push(
+          MaterialPageRoute(
+            builder: (context) {
+              return TarefaFormPage();
+            },
+          ),
+        )
+        .then((_) {
+          tarefas.clear();
+          _getTarefas();
+        });
 
     // var tituloTarefa = controllerTitulo.text;
     // var descricaoTarefa = controllerDescricao.text;
