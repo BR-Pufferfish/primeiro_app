@@ -22,7 +22,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     _getTarefas();
-
     super.initState();
   }
 
