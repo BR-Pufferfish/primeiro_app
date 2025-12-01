@@ -78,7 +78,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   leading: Icon(Icons.task),
                   title: Text(tarefas[index].titulo),
                   subtitle: Text(tarefas[index].descricao),
-                  trailing: Icon(Icons.arrow_right_alt_outlined),
+                  trailing: IconButton(
+                    icon: Icon(Icons.delete_outline_outlined),
+                    onPressed: _deletarTarefa,
+                  ),
                 );
               },
             ),
@@ -104,30 +107,9 @@ class _MyHomePageState extends State<MyHomePage> {
           tarefas.clear();
           _getTarefas();
         });
+  }
 
-    // var tituloTarefa = controllerTitulo.text;
-    // var descricaoTarefa = controllerDescricao.text;
-    // if (tituloTarefa.trim().isEmpty) {
-    //   ScaffoldMessenger.of(
-    //     context,
-    //   ).showSnackBar(SnackBar(content: Text('Por favor, digite um titulo.')));
-    //   return;
-    // }
-
-    // if (descricaoTarefa.trim().isEmpty) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(content: Text('Por favor, digite uma descrição.')),
-    //   );
-    //   return;
-    // }
-
-    // var tarefa = Tarefa(descricao: descricaoTarefa, titulo: tituloTarefa);
-
-    // setState(() {
-    //   tarefas.add(tarefa);
-    // });
-
-    // controllerDescricao.clear();
-    // controllerTitulo.clear();
+  void _deletarTarefa() {
+    // Implementar a lógica de deletar tarefa
   }
 }
