@@ -16,14 +16,14 @@ class _TarefaFormPageState extends State<TarefaFormPage> {
 
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  Tarefa? _tarefa; // Added Tarefa object
+  Tarefa? _tarefa; // Adiciona um objeto da tarefa para edição
 
   @override
   void initState() {
     controllerDescricao = TextEditingController();
     controllerTitulo = TextEditingController();
     if (widget.id != null) {
-      _loadTarefa(widget.id!); // Load task if id is provided
+      _loadTarefa(widget.id!); // Carrega a tarefa existente caso receba um ID
     }
     super.initState();
   }
@@ -108,13 +108,13 @@ class _TarefaFormPageState extends State<TarefaFormPage> {
       );
 
       if (widget.id == null) {
-        // Create new task
+        // Cria uma tarefa nova
         await dio.post(
           '/tarefa',
           data: {'titulo': tituloTarefa, 'descricao': descricaoTarefa},
         );
       } else {
-        // Update existing task
+        // Atualiza uma tarefa existente
         await dio.put(
           '/tarefa/${widget.id}',
           data: {'titulo': tituloTarefa, 'descricao': descricaoTarefa},
