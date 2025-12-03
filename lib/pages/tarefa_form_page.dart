@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:primeiro_app/models/tarefa_model.dart'; // Added import
 
 class TarefaFormPage extends StatefulWidget {
-  const TarefaFormPage({super.key});
+  final String? id; // Added id parameter
+  const TarefaFormPage({super.key, this.id});
 
   @override
   State<TarefaFormPage> createState() => _TarefaFormPageState();
@@ -14,10 +16,15 @@ class _TarefaFormPageState extends State<TarefaFormPage> {
 
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
+  Tarefa? _tarefa; // Added Tarefa object
+
   @override
   void initState() {
     controllerDescricao = TextEditingController();
     controllerTitulo = TextEditingController();
+    if (widget.id != null) {
+      _loadTarefa(widget.id!); // Load task if id is provided
+    }
     super.initState();
   }
 
@@ -31,7 +38,9 @@ class _TarefaFormPageState extends State<TarefaFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Cadastrar Tarefa')),
+      appBar: AppBar(
+        title: Text(widget.id == null ? 'Cadastrar Tarefa' : 'Editar Tarefa'),
+      ),
       body: Form(
         key: formKey,
         child: Column(
@@ -98,13 +107,46 @@ class _TarefaFormPageState extends State<TarefaFormPage> {
         ),
       );
 
-      var response = await dio.post(
-        '/tarefa',
-        data: {'titulo': tituloTarefa, 'descricao': descricaoTarefa},
-      );
+      if (widget.id == null) {
+        // Create new task
+        await dio.post(
+          '/tarefa',
+          data: {'titulo': tituloTarefa, 'descricao': descricaoTarefa},
+        );
+      } else {
+        // Update existing task
+        await dio.put(
+          '/tarefa/${widget.id}',
+          data: {'titulo': tituloTarefa, 'descricao': descricaoTarefa},
+        );
+      }
 
       if (!context.mounted) return;
       Navigator.pop(context);
+    }
+  }
+
+  Future<void> _loadTarefa(String id) async {
+    var dio = Dio(
+      BaseOptions(
+        connectTimeout: const Duration(seconds: 30),
+        baseUrl: 'https://691266ae52a60f10c8218c11.mockapi.io/api/v1',
+      ),
+    );
+
+    var response = await dio.get('/tarefa/$id');
+    if (response.statusCode == 200) {
+      setState(() {
+        _tarefa = Tarefa.fromJson(response.data);
+        controllerTitulo.text = _tarefa!.titulo;
+        controllerDescricao.text = _tarefa!.descricao;
+      });
+    } else {
+      if (!context.mounted) return;
+      Navigator.pop(context);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erro ao carregar a tarefa.')));
     }
   }
 }
